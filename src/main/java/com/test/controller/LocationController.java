@@ -3,9 +3,9 @@ package com.test.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,27 +17,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.test.dto.ApiResponseDto;
 import com.test.dto.LocationDto;
+import com.test.entity.Location;
 import com.test.service.impl.ILocationServiceImpl;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("location")
+@RequestMapping("/api/v1/location")
 public class LocationController {
 	
 	@Autowired
 	private ILocationServiceImpl locationService;
 	
 	@GetMapping()
-	public ApiResponseDto<List<LocationDto>> getCriteriaListToSelect(){
+	public ApiResponseDto<List<Location>> getCriteriaListToSelect(){
 		
-		return ApiResponseDto.<List<LocationDto>>builder()
+		return ApiResponseDto.<List<Location>>builder()
 				.data(locationService.listLocations())
 				.message("success")
 				.build();
 	}
 	
 	@PostMapping
-	public ApiResponseDto<String> create(@RequestBody(required = true) LocationDto location){
+	public ApiResponseDto<String> create(@Valid @RequestBody(required = true) LocationDto location){
 		locationService.createLocation(location);
 		return ApiResponseDto.<String>builder()
 				.data("")
