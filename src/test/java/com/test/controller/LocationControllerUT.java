@@ -1,6 +1,8 @@
 package com.test.controller;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -12,12 +14,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.test.TestBancoBogotaApplication;
 import com.test.dto.LocationDto;
@@ -40,7 +44,6 @@ private static final String RESOURCE_PATH = "/api/v1/location";
 	
 	private Location location1;
 	private Location location2;
-	private LocationDto locationDto1;
 	
 	@BeforeEach
 	public void setup() {
@@ -57,9 +60,6 @@ private static final String RESOURCE_PATH = "/api/v1/location";
 				name("Apatamento2").
 				areaM2(30l).build();
 		
-		locationDto1 = LocationDto.builder().
-				name("Apatamento3").
-				areaM2(15l).build();
 	}
 	
 	@Test
@@ -79,6 +79,44 @@ private static final String RESOURCE_PATH = "/api/v1/location";
 		result.andExpect(jsonPath("$.message").value("success"));
 		
 	}
+	
+	@Test
+	public void getAll() throws Exception {
+		List<Location> listLocations = List.of(location1, location2);
+		when(locationServiceImpl.listLocations()).thenReturn(listLocations);
+		
+		final ResultActions result = this.mockMvc.perform(
+				get(RESOURCE_PATH)
+				.accept(MediaType.APPLICATION_JSON)
+			    ).andDo(print());
 
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.message").value("success"));
+		
+		result.andExpect(jsonPath("$.data").isArray());
+		result.andExpect(jsonPath("$.data", hasSize(2))); 
+
+		result.andExpect(jsonPath("$.data[0].name").value("Apatamento1"));
+		result.andExpect(jsonPath("$.data[0].areaM2").value(25));
+		
+		result.andExpect(jsonPath("$.data[1].name").value("Apatamento2"));
+		result.andExpect(jsonPath("$.data[1].areaM2").value(30));
+		
+	}
+	
+
+	@Test
+	public void delete() throws Exception {
+		
+		final ResultActions result = this.mockMvc.perform(MockMvcRequestBuilders.delete(RESOURCE_PATH)
+				.header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+				.header("idLocation", 1))
+				.andDo(print());
+		
+		result.andExpect(status().isOk());
+		result.andExpect(jsonPath("$.message").value("success"));
+		
+	}
+	
 	
 }

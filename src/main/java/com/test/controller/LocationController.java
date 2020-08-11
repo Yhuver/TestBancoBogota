@@ -30,7 +30,7 @@ public class LocationController {
 	private ILocationService locationService;
 	
 	@GetMapping()
-	public ApiResponseDto<List<Location>> getCriteriaListToSelect(){
+	public ApiResponseDto<List<Location>> getAll(){
 		
 		return ApiResponseDto.<List<Location>>builder()
 				.data(locationService.listLocations())
@@ -48,7 +48,7 @@ public class LocationController {
 	}
 	
 	@DeleteMapping
-	public ApiResponseDto<String> create(@RequestHeader(required = true) Long idLocation){
+	public ApiResponseDto<String> delete(@RequestHeader(required = true) Long idLocation){
 		locationService.deleteLocation(idLocation);
 		return ApiResponseDto.<String>builder()
 				.data("")
