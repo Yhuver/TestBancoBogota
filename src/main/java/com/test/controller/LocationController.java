@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.test.dto.ApiResponseDto;
 import com.test.dto.LocationDto;
 import com.test.entity.Location;
+import com.test.service.ILocationService;
 import com.test.service.impl.ILocationServiceImpl;
 
 @CrossOrigin(origins = "*")
@@ -26,7 +27,7 @@ import com.test.service.impl.ILocationServiceImpl;
 public class LocationController {
 	
 	@Autowired
-	private ILocationServiceImpl locationService;
+	private ILocationService locationService;
 	
 	@GetMapping()
 	public ApiResponseDto<List<Location>> getCriteriaListToSelect(){
